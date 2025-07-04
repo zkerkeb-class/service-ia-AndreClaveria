@@ -2,6 +2,7 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
+  js.configs.recommended,
   ...tseslint.configs.recommended,
   {
     languageOptions: {
@@ -17,8 +18,7 @@ export default tseslint.config(
       }
     },
     rules: {
-      // Style rules
-      quotes: ["error", "double"],
+      quotes: ["error", "single"],
       semi: ["error", "always"],
       indent: ["error", 2],
       "object-curly-spacing": ["error", "always"],
