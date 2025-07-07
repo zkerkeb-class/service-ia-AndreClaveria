@@ -1,0 +1,83 @@
+# Dépendances
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Dossier de build
+dist/
+build/
+out/
+
+# Fichiers d'environnement (contiennent des informations sensibles)
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.*.local
+
+# Fichiers de configuration locaux
+config/local*
+config/development*
+*.pem
+*.key
+*.cert
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dossiers de cache
+.npm/
+.yarn/
+.pnp/
+.pnp.js
+.cache/
+
+# Système d'exploitation
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Fichiers de couverture de test
+coverage/
+.nyc_output/
+
+# Outils IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.settings/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Données temporaires
+tmp/
+temp/
+uploads/*
+!uploads/.gitkeep
+
+# Fichiers de débogage
+.node-version
+nodemon.json
+nodemon-debug.json
+
+# Fichiers de configuration spécifiques
+.eslintcache
+.stylelintcache
+
+# Fichiers de verrouillage MongoDB
+*.lock
