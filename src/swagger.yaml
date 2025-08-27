@@ -1,0 +1,2090 @@
+openapi: 3.0.0
+info:
+  title: CRM AndreClaveria BDD Service API
+  version: 1.0.0
+  description: Documentation de l'API du microservice BDD (Clients, Contacts, Entreprises, Opportunités, Équipes) pour le CRM AndreClaveria
+  contact:
+    name: Support
+    email: support@andreclaveria.fr
+
+servers:
+  - url: http://localhost:3002
+    description: Serveur de développement
+  - url: https://api.andreclaveria.fr/bdd
+    description: Serveur de production
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+          description: Rue
+        city:
+          type: string
+          description: Ville
+        zipCode:
+          type: string
+          description: Code postal
+        country:
+          type: string
+          description: Pays
+      example:
+        street: "123 rue Exemple"
+        city: "Paris"
+        zipCode: "75000"
+        country: "France"
+
+    Client:
+      type: object
+      required:
+        - name
+        - company
+      properties:
+        _id:
+          type: string
+          description: ID auto-généré du client
+        name:
+          type: string
+          description: Nom du client
+        description:
+          type: string
+          description: Description du client
+        sector:
+          type: string
+          description: Secteur d'activité
+        address:
+          $ref: "#/components/schemas/Address"
+        phone:
+          type: string
+          description: Numéro de téléphone
+        email:
+          type: string
+          format: email
+          description: Email du client
+        logo:
+          type: string
+          description: URL du logo du client
+        company:
+          type: string
+          description: ID de l'entreprise propriétaire
+        team:
+          type: string
+          description: ID de l'équipe responsable
+        assignedTo:
+          type: string
+          description: ID de l'utilisateur responsable
+        goodForCustomer:
+          type: number
+          minimum: 0
+          maximum: 100
+          default: 50
+          description: Indicateur "bonne poire" (0-100)
+        contacts:
+          type: array
+          items:
+            type: string
+          description: Liste des IDs des contacts associés
+        opportunities:
+          type: array
+          items:
+            type: string
+          description: Liste des IDs des opportunités associées
+        isActive:
+          type: boolean
+          default: true
+          description: Indique si le client est actif
+        createdAt:
+          type: string
+          format: date-time
+          description: Date de création
+        updatedAt:
+          type: string
+          format: date-time
+          description: Date de dernière mise à jour
+      example:
+        name: "Acme Inc."
+        description: "Société spécialisée dans les produits innovants"
+        sector: "Technologies"
+        address:
+          street: "123 rue Exemple"
+          city: "Paris"
+          zipCode: "75000"
+          country: "France"
+        phone: "0123456789"
+        email: "contact@acme.com"
+        company: "60d21b4667d0d8992e610c85"
+        goodForCustomer: 75
+        isActive: true
+
+    Company:
+      type: object
+      required:
+        - name
+        - owner
+      properties:
+        _id:
+          type: string
+          description: ID auto-généré de l'entreprise
+        name:
+          type: string
+          description: Nom de l'entreprise
+        description:
+          type: string
+          description: Description de l'entreprise
+        address:
+          $ref: "#/components/schemas/Address"
+        phone:
+          type: string
+          description: Numéro de téléphone
+        email:
+          type: string
+          format: email
+          description: Email de l'entreprise
+        website:
+          type: string
+          description: Site web de l'entreprise
+        industry:
+          type: string
+          description: Secteur d'activité
+        logo:
+          type: string
+          description: URL du logo de l'entreprise
+        owner:
+          type: string
+          description: ID du propriétaire de l'entreprise
+        teams:
+          type: array
+          items:
+            type: string
+          description: Liste des IDs des équipes
+        isActive:
+          type: boolean
+          default: true
+          description: Indique si l'entreprise est active
+        createdAt:
+          type: string
+          format: date-time
+          description: Date de création
+        updatedAt:
+          type: string
+          format: date-time
+          description: Date de dernière mise à jour
+      example:
+        name: "AndreClaveria SARL"
+        description: "Entreprise de conseil en informatique"
+        address:
+          street: "456 avenue Business"
+          city: "Lyon"
+          zipCode: "69000"
+          country: "France"
+        phone: "0123456789"
+        email: "contact@andreclaveria.fr"
+        website: "https://www.andreclaveria.fr"
+        industry: "Conseil"
+        owner: "60d21b4667d0d8992e610c86"
+        isActive: true
+
+    Contact:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - company
+        - client
+      properties:
+        _id:
+          type: string
+          description: ID auto-généré du contact
+        firstName:
+          type: string
+          description: Prénom du contact
+        lastName:
+          type: string
+          description: Nom de famille du contact
+        position:
+          type: string
+          description: Poste occupé
+        email:
+          type: string
+          format: email
+          description: Email du contact
+        phone:
+          type: string
+          description: Numéro de téléphone fixe
+        mobile:
+          type: string
+          description: Numéro de téléphone mobile
+        company:
+          type: string
+          description: ID de l'entreprise propriétaire
+        client:
+          type: string
+          description: ID du client associé
+        team:
+          type: string
+          description: ID de l'équipe responsable
+        assignedTo:
+          type: string
+          description: ID de l'utilisateur responsable
+        isPrimary:
+          type: boolean
+          default: false
+          description: Indique si c'est le contact principal
+        notes:
+          type: string
+          description: Notes concernant le contact
+        lastContactDate:
+          type: string
+          format: date-time
+          description: Date du dernier contact
+        opportunities:
+          type: array
+          items:
+            type: string
+          description: Liste des IDs des opportunités liées
+        isActive:
+          type: boolean
+          default: true
+          description: Indique si le contact est actif
+        createdAt:
+          type: string
+          format: date-time
+          description: Date de création
+        updatedAt:
+          type: string
+          format: date-time
+          description: Date de dernière mise à jour
+      example:
+        firstName: "Jean"
+        lastName: "Dupont"
+        position: "Directeur Commercial"
+        email: "jean.dupont@acme.com"
+        phone: "0123456789"
+        mobile: "0612345678"
+        company: "60d21b4667d0d8992e610c85"
+        client: "60d21b4667d0d8992e610c87"
+        isPrimary: true
+        notes: "Contact principal pour le projet XYZ"
+        isActive: true
+
+    Opportunity:
+      type: object
+      required:
+        - title
+        - value
+        - company
+        - client
+      properties:
+        _id:
+          type: string
+          description: ID auto-généré de l'opportunité
+        title:
+          type: string
+          description: Titre de l'opportunité
+        description:
+          type: string
+          description: Description détaillée
+        value:
+          type: number
+          description: Valeur monétaire de l'opportunité
+        status:
+          type: string
+          enum: [lead, qualified, proposition, negotiation, won, lost]
+          default: lead
+          description: Statut de l'opportunité
+        probability:
+          type: number
+          minimum: 0
+          maximum: 100
+          default: 20
+          description: Probabilité de succès (0-100)
+        expectedClosingDate:
+          type: string
+          format: date-time
+          description: Date prévue de conclusion
+        company:
+          type: string
+          description: ID de l'entreprise propriétaire
+        client:
+          type: string
+          description: ID du client associé
+        contacts:
+          type: array
+          items:
+            type: string
+          description: Liste des IDs des contacts impliqués
+        team:
+          type: string
+          description: ID de l'équipe responsable
+        assignedTo:
+          type: string
+          description: ID de l'utilisateur responsable
+        notes:
+          type: string
+          description: Notes concernant l'opportunité
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Nom du produit
+              price:
+                type: number
+                description: Prix unitaire
+              quantity:
+                type: number
+                description: Quantité
+          description: Liste des produits concernés
+        isActive:
+          type: boolean
+          default: true
+          description: Indique si l'opportunité est active
+        createdAt:
+          type: string
+          format: date-time
+          description: Date de création
+        updatedAt:
+          type: string
+          format: date-time
+          description: Date de dernière mise à jour
+      example:
+        title: "Projet de déploiement CRM"
+        description: "Implémentation d'un nouveau CRM pour le service commercial"
+        value: 25000
+        status: "proposition"
+        probability: 60
+        expectedClosingDate: "2025-08-15T00:00:00.000Z"
+        company: "60d21b4667d0d8992e610c85"
+        client: "60d21b4667d0d8992e610c87"
+        contacts: ["60d21b4667d0d8992e610c88"]
+        notes: "Client très intéressé, en attente de validation budgétaire"
+        products:
+          - name: "Licences CRM"
+            price: 1000
+            quantity: 25
+
+    Team:
+      type: object
+      required:
+        - name
+        - company
+      properties:
+        _id:
+          type: string
+          description: ID auto-généré de l'équipe
+        name:
+          type: string
+          description: Nom de l'équipe
+        description:
+          type: string
+          description: Description de l'équipe
+        company:
+          type: string
+          description: ID de l'entreprise associée
+        members:
+          type: array
+          items:
+            type: string
+          description: Liste des IDs des membres de l'équipe
+        leader:
+          type: string
+          description: ID du chef d'équipe
+        isActive:
+          type: boolean
+          default: true
+          description: Indique si l'équipe est active
+        createdAt:
+          type: string
+          format: date-time
+          description: Date de création
+        updatedAt:
+          type: string
+          format: date-time
+          description: Date de dernière mise à jour
+      example:
+        name: "Équipe Commerciale"
+        description: "Équipe dédiée aux grands comptes"
+        company: "60d21b4667d0d8992e610c85"
+        members: ["60d21b4667d0d8992e610c86", "60d21b4667d0d8992e610c89"]
+        leader: "60d21b4667d0d8992e610c86"
+        isActive: true
+
+    ClientInput:
+      type: object
+      required:
+        - name
+        - company
+      properties:
+        name:
+          type: string
+          description: Nom du client
+        description:
+          type: string
+          description: Description du client
+        sector:
+          type: string
+          description: Secteur d'activité
+        address:
+          $ref: "#/components/schemas/Address"
+        phone:
+          type: string
+          description: Numéro de téléphone
+        email:
+          type: string
+          format: email
+          description: Email du client
+        logo:
+          type: string
+          description: URL du logo du client
+        company:
+          type: string
+          description: ID de l'entreprise propriétaire
+        team:
+          type: string
+          description: ID de l'équipe responsable
+        assignedTo:
+          type: string
+          description: ID de l'utilisateur responsable
+        goodForCustomer:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Indicateur "bonne poire" (0-100)
+        contacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContactInput"
+          description: Liste des contacts à créer avec le client
+      example:
+        name: "Acme Inc."
+        description: "Société spécialisée dans les produits innovants"
+        sector: "Technologies"
+        address:
+          street: "123 rue Exemple"
+          city: "Paris"
+          zipCode: "75000"
+          country: "France"
+        phone: "0123456789"
+        email: "contact@acme.com"
+        company: "60d21b4667d0d8992e610c85"
+        goodForCustomer: 75
+        contacts:
+          - firstName: "Jean"
+            lastName: "Dupont"
+            position: "Directeur Commercial"
+            email: "jean.dupont@acme.com"
+            phone: "0123456789"
+
+    ContactInput:
+      type: object
+      required:
+        - firstName
+        - lastName
+      properties:
+        firstName:
+          type: string
+          description: Prénom du contact
+        lastName:
+          type: string
+          description: Nom de famille du contact
+        position:
+          type: string
+          description: Poste occupé
+        email:
+          type: string
+          format: email
+          description: Email du contact
+        phone:
+          type: string
+          description: Numéro de téléphone fixe
+        mobile:
+          type: string
+          description: Numéro de téléphone mobile
+        client:
+          type: string
+          description: ID du client associé
+        team:
+          type: string
+          description: ID de l'équipe responsable
+        assignedTo:
+          type: string
+          description: ID de l'utilisateur responsable
+        isPrimary:
+          type: boolean
+          description: Indique si c'est le contact principal
+        notes:
+          type: string
+          description: Notes concernant le contact
+      example:
+        firstName: "Jean"
+        lastName: "Dupont"
+        position: "Directeur Commercial"
+        email: "jean.dupont@acme.com"
+        phone: "0123456789"
+        isPrimary: true
+        notes: "Contact principal pour le projet XYZ"
+
+    CompanyInput:
+      type: object
+      required:
+        - name
+        - owner
+      properties:
+        name:
+          type: string
+          description: Nom de l'entreprise
+        description:
+          type: string
+          description: Description de l'entreprise
+        address:
+          $ref: "#/components/schemas/Address"
+        phone:
+          type: string
+          description: Numéro de téléphone
+        email:
+          type: string
+          format: email
+          description: Email de l'entreprise
+        website:
+          type: string
+          description: Site web de l'entreprise
+        industry:
+          type: string
+          description: Secteur d'activité
+        logo:
+          type: string
+          description: URL du logo de l'entreprise
+        owner:
+          type: string
+          description: ID du propriétaire de l'entreprise
+      example:
+        name: "AndreClaveria SARL"
+        description: "Entreprise de conseil en informatique"
+        address:
+          street: "456 avenue Business"
+          city: "Lyon"
+          zipCode: "69000"
+          country: "France"
+        phone: "0123456789"
+        email: "contact@andreclaveria.fr"
+        website: "https://www.andreclaveria.fr"
+        industry: "Conseil"
+        owner: "60d21b4667d0d8992e610c86"
+
+    OpportunityInput:
+      type: object
+      required:
+        - title
+        - value
+        - company
+        - client
+      properties:
+        title:
+          type: string
+          description: Titre de l'opportunité
+        description:
+          type: string
+          description: Description détaillée
+        value:
+          type: number
+          description: Valeur monétaire de l'opportunité
+        status:
+          type: string
+          enum: [lead, qualified, proposition, negotiation, won, lost]
+          description: Statut de l'opportunité
+        probability:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Probabilité de succès (0-100)
+        expectedClosingDate:
+          type: string
+          format: date-time
+          description: Date prévue de conclusion
+        company:
+          type: string
+          description: ID de l'entreprise propriétaire
+        client:
+          type: string
+          description: ID du client associé
+        contacts:
+          type: array
+          items:
+            type: string
+          description: Liste des IDs des contacts impliqués
+        team:
+          type: string
+          description: ID de l'équipe responsable
+        assignedTo:
+          type: string
+          description: ID de l'utilisateur responsable
+        notes:
+          type: string
+          description: Notes concernant l'opportunité
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Nom du produit
+              price:
+                type: number
+                description: Prix unitaire
+              quantity:
+                type: number
+                description: Quantité
+          description: Liste des produits concernés
+      example:
+        title: "Projet de déploiement CRM"
+        description: "Implémentation d'un nouveau CRM pour le service commercial"
+        value: 25000
+        status: "proposition"
+        probability: 60
+        expectedClosingDate: "2025-08-15T00:00:00.000Z"
+        company: "60d21b4667d0d8992e610c85"
+        client: "60d21b4667d0d8992e610c87"
+        contacts: ["60d21b4667d0d8992e610c88"]
+        notes: "Client très intéressé, en attente de validation budgétaire"
+        products:
+          - name: "Licences CRM"
+            price: 1000
+            quantity: 25
+
+    TeamInput:
+      type: object
+      required:
+        - name
+        - company
+      properties:
+        name:
+          type: string
+          description: Nom de l'équipe
+        description:
+          type: string
+          description: Description de l'équipe
+        company:
+          type: string
+          description: ID de l'entreprise associée
+        members:
+          type: array
+          items:
+            type: string
+          description: Liste des IDs des membres de l'équipe
+        leader:
+          type: string
+          description: ID du chef d'équipe
+      example:
+        name: "Équipe Commerciale"
+        description: "Équipe dédiée aux grands comptes"
+        company: "60d21b4667d0d8992e610c85"
+        members: ["60d21b4667d0d8992e610c86", "60d21b4667d0d8992e610c89"]
+        leader: "60d21b4667d0d8992e610c86"
+
+    StandardResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indique si la requête a réussi
+        data:
+          type: object
+          description: Données retournées
+        message:
+          type: string
+          description: Message de réponse
+      example:
+        success: true
+        data: {}
+        message: "Opération réussie"
+
+    StandardListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indique si la requête a réussi
+        count:
+          type: integer
+          description: Nombre d'éléments retournés
+        data:
+          type: array
+          items:
+            type: object
+          description: Liste d'éléments retournés
+      example:
+        success: true
+        count: 2
+        data: [{}, {}]
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: false
+          description: Indique que la requête a échoué
+        error:
+          type: string
+          description: Message d'erreur
+      example:
+        success: false
+        error: "Erreur serveur"
+
+security:
+  - bearerAuth: []
+
+paths:
+  #
+  # Routes des clients
+  #
+  /api/clients:
+    get:
+      summary: Récupérer tous les clients
+      tags:
+        - Clients
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Liste des clients récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StandardListResponse"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      summary: Créer un nouveau client
+      tags:
+        - Clients
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientInput"
+      responses:
+        "201":
+          description: Client créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StandardResponse"
+        "400":
+          description: Données d'entrée invalides
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/clients/{id}:
+    get:
+      summary: Récupérer un client par son ID
+      tags:
+        - Clients
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du client
+      responses:
+        "200":
+          description: Client récupéré avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StandardResponse"
+        "404":
+          description: Client non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    put:
+      summary: Mettre à jour un client
+      tags:
+        - Clients
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientInput"
+      responses:
+        "200":
+          description: Client mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StandardResponse"
+        "404":
+          description: Client non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      summary: Supprimer un client
+      tags:
+        - Clients
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du client
+      responses:
+        "200":
+          description: Client supprimé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StandardResponse"
+        "404":
+          description: Client non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/clients/company/{companyId}:
+    get:
+      summary: Récupérer les clients par entreprise
+      tags:
+        - Clients
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'entreprise
+      responses:
+        "200":
+          description: Liste des clients récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StandardListResponse"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/clients/team/{teamId}:
+    get:
+      summary: Récupérer les clients par équipe
+      tags:
+        - Clients
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'équipe
+      responses:
+        "200":
+          description: Liste des clients récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StandardListResponse"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  #
+  # Routes des entreprises
+  #
+  /api/companies:
+    get:
+      summary: Récupérer toutes les entreprises
+      tags:
+        - Entreprises
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Liste des entreprises récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Company"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      summary: Créer une nouvelle entreprise
+      tags:
+        - Entreprises
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanyInput"
+      responses:
+        "201":
+          description: Entreprise créée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+        "400":
+          description: Données d'entrée invalides
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/companies/{id}:
+    get:
+      summary: Récupérer une entreprise par son ID
+      tags:
+        - Entreprises
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'entreprise
+      responses:
+        "200":
+          description: Entreprise récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+        "404":
+          description: Entreprise non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    put:
+      summary: Mettre à jour une entreprise
+      tags:
+        - Entreprises
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'entreprise
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanyInput"
+      responses:
+        "200":
+          description: Entreprise mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+        "404":
+          description: Entreprise non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      summary: Supprimer une entreprise
+      tags:
+        - Entreprises
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'entreprise
+      responses:
+        "200":
+          description: Entreprise supprimée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "404":
+          description: Entreprise non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    /api/companies/owner/{ownerId}:
+    get:
+      summary: Récupérer les entreprises par propriétaire
+      tags:
+        - Entreprises
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: ownerId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du propriétaire
+      responses:
+        '200':
+          description: Liste des entreprises récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Company'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/companies/{companyId}/teams/{teamId}:
+    post:
+      summary: Ajouter une équipe à une entreprise
+      tags:
+        - Entreprises
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'entreprise
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'équipe
+      responses:
+        '200':
+          description: Équipe ajoutée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+        '404':
+          description: Entreprise ou équipe non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      summary: Retirer une équipe d'une entreprise
+      tags:
+        - Entreprises
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'entreprise
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'équipe
+      responses:
+        '200':
+          description: Équipe retirée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+        '404':
+          description: Entreprise ou équipe non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  #
+  # Routes des contacts
+  #
+  /api/contacts:
+    get:
+      summary: Récupérer tous les contacts
+      tags:
+        - Contacts
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste des contacts récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardListResponse'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      summary: Créer un nouveau contact
+      tags:
+        - Contacts
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactInput'
+      responses:
+        '201':
+          description: Contact créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponse'
+        '400':
+          description: Données d'entrée invalides
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /api/contacts/{id}:
+    get:
+      summary: Récupérer un contact par son ID
+      tags:
+        - Contacts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du contact
+      responses:
+        '200':
+          description: Contact récupéré avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponse'
+        '404':
+          description: Contact non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    put:
+      summary: Mettre à jour un contact
+      tags:
+        - Contacts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactInput'
+      responses:
+        '200':
+          description: Contact mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponse'
+        '404':
+          description: Contact non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      summary: Supprimer un contact
+      tags:
+        - Contacts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du contact
+      responses:
+        '200':
+          description: Contact supprimé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponse'
+        '404':
+          description: Contact non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /api/contacts/company/{companyId}:
+    get:
+      summary: Récupérer les contacts par entreprise
+      tags:
+        - Contacts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'entreprise
+      responses:
+        '200':
+          description: Liste des contacts récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardListResponse'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /api/contacts/client/{clientId}:
+    get:
+      summary: Récupérer les contacts par client
+      tags:
+        - Contacts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du client
+      responses:
+        '200':
+          description: Liste des contacts récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardListResponse'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  #
+  # Routes des opportunités
+  #
+  /api/opportunities:
+    get:
+      summary: Récupérer toutes les opportunités
+      tags:
+        - Opportunités
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste des opportunités récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardListResponse'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      summary: Créer une nouvelle opportunité
+      tags:
+        - Opportunités
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpportunityInput'
+      responses:
+        '201':
+          description: Opportunité créée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponse'
+        '400':
+          description: Données d'entrée invalides
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /api/opportunities/{id}:
+    get:
+      summary: Récupérer une opportunité par son ID
+      tags:
+        - Opportunités
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'opportunité
+      responses:
+        '200':
+          description: Opportunité récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponse'
+        '404':
+          description: Opportunité non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Mettre à jour une opportunité
+      tags:
+        - Opportunités
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'opportunité
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpportunityInput'
+      responses:
+        '200':
+          description: Opportunité mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponse'
+        '404':
+          description: Opportunité non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      summary: Supprimer une opportunité
+      tags:
+        - Opportunités
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'opportunité
+      responses:
+        '200':
+          description: Opportunité supprimée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponse'
+        '404':
+          description: Opportunité non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /api/opportunities/company/{companyId}:
+    get:
+      summary: Récupérer les opportunités par entreprise
+      tags:
+        - Opportunités
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'entreprise
+      responses:
+        '200':
+          description: Liste des opportunités récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardListResponse'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /api/opportunities/client/{clientId}:
+    get:
+      summary: Récupérer les opportunités par client
+      tags:
+        - Opportunités
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du client
+      responses:
+        '200':
+          description: Liste des opportunités récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardListResponse'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /api/opportunities/status/{status}:
+    get:
+      summary: Récupérer les opportunités par statut
+      tags:
+        - Opportunités
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [lead, qualified, proposition, negotiation, won, lost]
+          description: Statut des opportunités
+      responses:
+        '200':
+          description: Liste des opportunités récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardListResponse'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /api/opportunities/{opportunityId}/contacts/{contactId}:
+    post:
+      summary: Ajouter un contact à une opportunité
+      tags:
+        - Opportunités
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: opportunityId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'opportunité
+        - name: contactId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du contact
+      responses:
+        '200':
+          description: Contact ajouté avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponse'
+        '404':
+          description: Opportunité ou contact non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  #
+  # Routes des équipes
+  #
+  /api/teams:
+    get:
+      summary: Récupérer toutes les équipes
+      tags:
+        - Équipes
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste des équipes récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      summary: Créer une nouvelle équipe
+      tags:
+        - Équipes
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamInput'
+      responses:
+        '201':
+          description: Équipe créée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '400':
+          description: Données d'entrée invalides
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /api/teams/{id}:
+    get:
+      summary: Récupérer une équipe par son ID
+      tags:
+        - Équipes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'équipe
+      responses:
+        '200':
+          description: Équipe récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '404':
+          description: Équipe non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Mettre à jour une équipe
+      tags:
+        - Équipes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'équipe
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamInput'
+      responses:
+        '200':
+          description: Équipe mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '404':
+          description: Équipe non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'  
+    delete:
+      summary: Supprimer une équipe
+      tags:
+        - Équipes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'équipe
+      responses:
+        '200':
+          description: Équipe supprimée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: Équipe non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/teams/company/{companyId}:
+    get:
+      summary: Récupérer les équipes par entreprise
+      tags:
+        - Équipes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'entreprise
+      responses:
+        '200':
+          description: Liste des équipes récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/teams/{teamId}/members/{userId}:
+    post:
+      summary: Ajouter un membre à une équipe
+      tags:
+        - Équipes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'équipe
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'utilisateur
+      responses:
+        '200':
+          description: Membre ajouté avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '404':
+          description: Équipe non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Retirer un membre d'une équipe
+      tags:
+        - Équipes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'équipe
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'utilisateur
+      responses:
+        '200':
+          description: Membre retiré avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '404':
+          description: Équipe non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/teams/{teamId}/leader/{userId}:
+    put:
+      summary: Définir le leader d'une équipe
+      tags:
+        - Équipes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'équipe
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'utilisateur
+      responses:
+        '200':
+          description: Leader défini avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '404':
+          description: Équipe non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/teams/{teamId}/members/{userId}/check:
+    get:
+      summary: Vérifier si un utilisateur est membre d'une équipe
+      tags:
+        - Équipes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'équipe
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'utilisateur
+      responses:
+        '200':
+          description: Vérification effectuée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isMember:
+                    type: boolean
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
